@@ -1,5 +1,7 @@
 # 4-2 구간 합 (Prefix Sum)
 
+## 1. 구간 합 구하기
+
 ### 1. 개념 및 사용 조건
 - 공식: `S[i] = S[i-1] + A[i]`
 - 트리거: 데이터의 변경이 없고(Immutable), "연속된 구간의 합을 반복해서(여러 번) 구해야 할 때" 무조건 꺼내 쓴다.
@@ -21,3 +23,38 @@
 for (int i = 1; i <= n; i++) {
     prefixSum[i] = prefixSum[i - 1] + nums[i - 1]; 
 }
+```
+
+## 2. 구간 합 구하기2
+
+
+### 1. 개념 및 사용 조건
+- 공식: 2D 누적합 배열 구축 시 `S[i][j] = S[i-1][j] + S[i][j-1] - S[i-1][j-1] + A[i][j]`
+- 트리거: 2D 배열에서 데이터 변경이 없고(Immutable), "특정 직사각형 영역의 합을 반복해서(여러 번) 구해야 할 때" 사용
+- 배열 설계: 2D 배열이므로 행과 열 모두 N+1로 설계하고 0번 행과 0번 열은 0으로 비워둔다. 이는 sumRegion 계산 시 경계 케이스(row1=0, col1=0)를 안전하게 처리하기 위함.
+
+### 2. 성능 분석
+- 시간 복잡도:
+  - 단순 중첩 반복문 누적: 구간 합을 구할 때마다 (row2-row1) * (col2-col1) 번 루프를 돌아서 최악의 경우 O(N^2)
+  - 2D 누적합 배열 활용: 미리 계산된 값 4개를 더하고 빼는 것만으로 O(1) (상수 시간) 만에 해결 가능.
+  - 질의가 M번 들어올 때 전체 시간 복잡도를 O(N^2 * M)에서 O(N^2 + M)으로 획기적으로 줄임.
+
+### 3. 주의
+- 인덱스 에러: 배열 크기를 (rowCount) x (colCount)로 잡으면 sumRegion에서 row1-1, col1-1을 할 때 0일 경우 마이너스 인덱스 에러(ArrayIndexOutOfBoundsException) 발생. 반드시 (rowCount+1) x (colCount+1) 크기 패턴 유지할 것.
+- 포함-배제 원리: sumRegion에서 빼기를 두 번, 더하기를 한 번 하는 이유는 겹치는 영역을 정확히 제거하기 위함. 공식의 순서를 바꾸면 틀린 값이 나옴.
+- 자바 캡슐화: 리트코드 채점 서버는 클래스를 내부적으로 인스턴스화해서 호출하므로, 멤버 변수는 private으로 선언하여 외부 오염을 막아야 함.
+
+### 4. 핵심 로직 (코드 힌트)
+```java
+// 1번 행과 1번 열부터 채우는 정석 흐름 (matrix의 값을 하나씩 당겨와 매칭)
+for(int i=1;i<=rowCount;i++){
+    for(int j=1;j<=colCount;j++){
+        prefixSum[i][j] = prefixSum[i-1][j] + prefixSum[i][j-1] 
+                          - prefixSum[i-1][j-1] + matrix[i-1][j-1];
+    }
+}
+
+// 직사각형 구간 합 쿼리 (포함-배제 원리)
+return prefixSum[row2+1][col2+1] - prefixSum[row1][col2+1] 
+       - prefixSum[row2+1][col1] + prefixSum[row1][col1];
+```
