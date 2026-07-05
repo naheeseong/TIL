@@ -7,16 +7,15 @@
    - Sliding Window는 n이 10^9일 때 TLE 발생하므로, k(k-1)/2 < n 조건으로 O(√n) 최적화.
    - 오버플로우 방지: k * (k - 1) / 2 계산 시 long 타입 사용.
 */
+public class LT_ConsecutiveNumbersSum_Hard {
 
-// 리트코드에 제출해서 통과한 클래스
-class ConsecutiveNumbersSum {
-
+    // 릿코드 핵심 풀이 메서드
     public int consecutiveNumbersSum(int n) {
         int count = 1;  // k=1: n 자신은 항상 카운트
 
         // k: 연속된 정수의 개수
         // k(k-1)/2 < n일 때만 start가 양수가 될 수 있음
-        for (int k = 2; k * (k - 1) / 2 < n; k++) {
+        for (int k = 2; (long)k * (k - 1) / 2 < n; k++) {
             // start = (n - k(k-1)/2) / k
             // remainder가 k로 나누어떨어지면 start는 정수
             long remainder = n - (long)k * (k - 1) / 2;
@@ -28,13 +27,11 @@ class ConsecutiveNumbersSum {
 
         return count;
     }
-}
 
-// 인텔리제이에서 실행하기 위한 메인 클래스
-public class LT_ConsecutiveNumbersSum_Hard {
+    // 인텔리제이에서 실행하기 위한 메인 메서드
     public static void main(String[] args) {
-
-        ConsecutiveNumbersSum obj = new ConsecutiveNumbersSum();
+        // 하나로 합쳤기 때문에 내 자신을 객체로 생성
+        LT_ConsecutiveNumbersSum_Hard obj = new LT_ConsecutiveNumbersSum_Hard();
 
         // 테스트 케이스 1
         int n1 = 5;
